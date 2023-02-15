@@ -1,0 +1,8 @@
+bblanchon/ArduinoJson@^6.19.4
+SPI
+denyschuhlib/NTPtime@^1.1.2
+bodmer/TFT_eSPI@^2.4.79
+mathertel/OneButton@^2.0.3
+paulstoffregen/Time@^1.6.1
+adafruit/Adafruit SHT31 Library@^2.2.0
+bodmer/TJpg_Decoder@^0.2.0
