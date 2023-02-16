@@ -39,7 +39,7 @@ void MySht3x_Init()
     uint8_t mNoI2c = 0;
     gSensorSht31 = Adafruit_SHT31(&Wire);
     // if (!gSensorSht31.begin(0x44))
-    if (!gSensorSht31.begin(0x45))
+    if (!gSensorSht31.begin(0x44))
     {
         Serial.println("couldnot find STH31-0x45");
         int mCount = 10;
@@ -60,7 +60,7 @@ void MySht3x_Init()
 
     if (mNoI2c == 2)
     {
-        if (!gSensorSht31.begin(0x44))
+        if (!gSensorSht31.begin(0x45))
         {
             Serial.println(" couldnot find STH31-0x44");
             int mCount = 10;
