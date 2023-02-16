@@ -23,7 +23,7 @@ uint8_t gSystemRunMode = 0;
 #define TIME_UPDATE_TEMPHUMI 30   // 30s 获取一次温湿度
 #define TIME_UPDATE_SCREEN 10     // 10s 跟新一次界面
 
-int g_system_status = -1; // 系统 运行状态；0--无网络；1--有网络
+int g_system_wifi_status = -1; // 系统 wifi状态；0--无网络；1--有网络
 uint8_t mBitFlagMode = 0;
 void System_RunMode_NorMal();
 int System_RunMode_Thermometer();
@@ -49,28 +49,39 @@ void setup()
   gSystemRunMode = 0;
   mBitFlagMode = 0;
 
-  /// @brief 温湿度传感器设置 ///
+  /// @brief 温湿度传感器设置  ///
   MySht3x_Init();
 
-  /// @brief  按钮事件设置 ///
+  /// @brief  按钮事件设置    ///
   MyButton_EventInit();
 
-  /// @brief  屏幕初始化设置 ///
+  /// @brief  屏幕初始化设置  ///
   MyDisplay_Init();
 
-  /// @brief wifi配网///
+  /// @brief wifi配网       ///
   MyWifi_init();
 
-  /// @brief 时间服务器初始化 ///
-  MyTime_Init();
+  if (WiFi.status() == WL_CONNECTED) //网络连接成功，获取时间、天气信息
+  {
+    /// @brief 时间服务器初始化 ///
+    MyTime_Init();
 
-  MyWeatherInfo_Get();
+    MyWeatherInfo_Get();
+
+    g_system_wifi_status = 1;
+  }
+  else
+  {
+    g_system_wifi_status = 0;
+  }
+
   MySht3x_Read();
 
-  /// @brief 清屏初始化///
+  /// @brief 清屏初始化     ///
   MyDisplay_EndInit();
 }
 
+//---------------------------------//
 void loop()
 {
   // put your main code here, to run repeatedly:
@@ -211,10 +222,10 @@ void loop()
   }
 
 #endif
-
+//------------------------------//
 void System_RunMode_NorMal()
 {
-  if (g_system_status == 0)
+  if (g_system_wifi_status == 0)
   {
     // 10s 更新一次温湿度
     if (mTaskGetTempHumi == 0 || millis() / 1000 - mTaskGetTempHumi > 10)
@@ -261,7 +272,7 @@ void System_RunMode_NorMal()
     }
   }
 }
-
+//------------------------------//
 int System_RunMode_Thermometer()
 {
   if (mTaskGetTempHumi == 0 || millis() / 1000 - mTaskGetTempHumi > 1)
@@ -278,7 +289,7 @@ int System_RunMode_Thermometer()
   }
   return 0;
 }
-
+//------------------------------//
 void System_RunMode_OxiMeter()
 {
 

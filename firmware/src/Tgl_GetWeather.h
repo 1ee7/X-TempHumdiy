@@ -29,27 +29,53 @@ float gfDataTemp;
 static uint8_t gInitThermoMeter = 0;
 
 //-------------------------------------//
+
+/*  上电检测外置温湿度传感器，如果失败，则加载板载温湿度传感器  */
 void MySht3x_Init()
 {
     Wire.begin(SDA_PIN, SCL_PIN);
     gInitThermoMeter = 0;
+
+    uint8_t mNoI2c = 0;
     gSensorSht31 = Adafruit_SHT31(&Wire);
     // if (!gSensorSht31.begin(0x44))
     if (!gSensorSht31.begin(0x45))
     {
-        Serial.println("couldnot find STH31");
+        Serial.println("couldnot find STH31-0x45");
         int mCount = 10;
         while (mCount > 0)
         {
             Serial.print(mCount);
-            Serial.println(" ,retry  init SHT3X ...");
+            Serial.println(" ,retry  init SHT3X 0x45 ...");
             mCount--;
             delay(100); // 100ms
         }
+        mNoI2c = 2;
     }
     else
     {
-        Serial.println("Sht3x init success.");
+        Serial.println("Sht3x 0x45 init success.");
+        mNoI2c = 1;
+    }
+
+    if (mNoI2c == 2)
+    {
+        if (!gSensorSht31.begin(0x44))
+        {
+            Serial.println(" couldnot find STH31-0x44");
+            int mCount = 10;
+            while (mCount > 0)
+            {
+                Serial.print(mCount);
+                Serial.println(" ,retry  init SHT3X-0x44...");
+                mCount--;
+                delay(100); // 100ms
+            }
+        }
+        else
+        {
+            Serial.println("Sht3x 0x44 init success.");
+        }
     }
 }
 

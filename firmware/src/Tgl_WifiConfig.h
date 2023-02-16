@@ -38,7 +38,7 @@ void MyWifi_SmartConfig(void) // 微信配网
         {
             Serial.println("SmartConfig failed and timeout.");
 
-            g_system_status = 0;
+            g_system_wifi_status = 0;
 
             mcount = 0;
             break;
@@ -51,7 +51,7 @@ void MyWifi_SmartConfig(void) // 微信配网
             Serial.printf("SSID:%s\r\n", WiFi.SSID().c_str());
             Serial.printf("PSW:%s\r\n", WiFi.psk().c_str());
             WiFi.setAutoConnect(true); // 设置自动连接
-            g_system_status = 1;
+            g_system_wifi_status = 1;
             break;
         }
     }
@@ -132,8 +132,9 @@ void MyWifi_Loading()
 {
 
     int count = 100;
-    while (WiFi.status() != WL_CONNECTED)
-    // for(int i=0;i<1000;i++)
+    // while (WiFi.status() != WL_CONNECTED)
+
+    for (int i = 0; i < 300; i++)
     {
         MyDisplay_Loading(70);
         if (gLoadNum >= 194)
@@ -141,6 +142,9 @@ void MyWifi_Loading()
             MyWifi_SmartConfig();
             break;
         }
+
+        if (WiFi.status() == WL_CONNECTED)
+            break;
     }
     delay(10);
     while (gLoadNum < 194) // 让动画走完

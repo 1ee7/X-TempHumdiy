@@ -11,9 +11,9 @@
 // #include "img/test/testImage.h"
 #include "Tgl_SyncTime.h"
 #include "number.h"
-extern
+// extern
 
-    TFT_eSPI gMyTft = TFT_eSPI(); // 引脚请自行配置tft_espi库中的 User_Setup.h文件
+TFT_eSPI gMyTft = TFT_eSPI(); // 引脚请自行配置tft_espi库中的 User_Setup.h文件
 uint16_t gBgColor = 0x0000;
 TFT_eSprite gTftSpriteClk = TFT_eSprite(&gMyTft);
 
@@ -43,13 +43,13 @@ void MyDisplay_Init()
     Serial.println("-init- dislplay is end.");
 }
 
-extern int g_system_status;
+extern int g_system_wifi_status;
 void MyDisplay_EndInit()
 {
     gMyTft.fillScreen(TFT_BLACK); // 清屏
 
     // TJpgDec.drawJpg(0, 0, background, sizeof(background)); //frog 背景图
-    if (g_system_status == 0)
+    if (g_system_wifi_status == 0)
     {
         TJpgDec.drawJpg(25, 183, temperature, sizeof(temperature)); // 温度图标
         TJpgDec.drawJpg(25, 213, humidity, sizeof(humidity));       // 湿度图标
@@ -249,7 +249,7 @@ void MyDisplay_WeaterData()
 //////////////////////////////////////////////////////////////////
 
 TFT_eSprite Tclk = TFT_eSprite(&gMyTft);
-;
+
 String wk[7] = {"日", "一", "二", "三", "四", "五", "六"};
 unsigned char Hour_sign = 60;
 unsigned char Minute_sign = 60;
@@ -281,7 +281,6 @@ void digitalClockInit()
 
 void digitalClockDisplay()
 {
-
     int timey = 82;
     if (hour() != Hour_sign) // 时钟刷新
     {
@@ -289,6 +288,7 @@ void digitalClockDisplay()
         dig.printfW3660(46, timey, hour() % 10);
         Hour_sign = hour();
     }
+    
     if (minute() != Minute_sign) // 分钟刷新
     {
         dig.printfO3660(105, timey, minute() / 10);
@@ -409,6 +409,8 @@ void MyDisplay_ShowTmpHumi()
     dig.printfW1830(135, myHData, mIHumi2 / 10);
     dig.printfW1830(175, myHData, mIHumi2 % 10);
 }
+
+//-------------------------------//
 void MyDisplay_Clear()
 {
     gMyTft.fillScreen(TFT_BLACK); // 清屏
