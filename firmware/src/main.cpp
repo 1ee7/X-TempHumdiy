@@ -16,6 +16,11 @@ uint64_t mTaskGetWeather = 0;
 uint64_t mTaskGetTempHumi = 0;
 uint64_t mTaskUpdateScreen = 0;
 
+const int mA_BatVol_Pin = A0; //模拟量输入引脚
+
+int mBat_Vol_RawValue = 0;  //电池电压读取值
+int mBat_Vol_RealValue = 0; //电池电压读取值映射值
+
 uint8_t gSystemRunMode = 0;
 // 0--正常模式；1--省电模式；2--温度计模式；3--血氧仪模式；4--配网模式；
 
@@ -48,6 +53,9 @@ void setup()
 
   gSystemRunMode = 0;
   mBitFlagMode = 0;
+
+  ///  @brief 电压采集引脚    ///
+  pinMode(mA_BatVol_Pin, INPUT);
 
   /// @brief 温湿度传感器设置  ///
   MySht3x_Init();
@@ -106,7 +114,6 @@ void loop()
     {
       gSystemRunMode = MODE_OXIMETER;
     }
-
     break;
 
   case MODE_OXIMETER:
@@ -174,9 +181,7 @@ void loop()
     break;
 
   case MODE_NORMAL:
-
   default:
-
     if ((mBitFlagMode & 0x01) == 0)
     {
       Serial.println("system run mode is normal");
@@ -191,6 +196,13 @@ void loop()
     break;
   }
 
+  /// @brief 采集电池电压，显示电池电量 ///
+  mBat_Vol_RawValue = analogRead(mA_BatVol_Pin);
+
+  mBat_Vol_RealValue = map(mBat_Vol_RawValue, 0, 1024, 0, 330); //可以修改数值映射330   3.3
+
+  Serial.print("battery value:");
+  Serial.println(mBat_Vol_RealValue, DEC);
   MyButton_Tick();
   delay(2);
 }
@@ -239,7 +251,6 @@ void System_RunMode_NorMal()
   }
   else
   {
-
     /// 时钟显示 ///
     MyDisplay_ShowTime();
 
@@ -292,7 +303,6 @@ int System_RunMode_Thermometer()
 //------------------------------//
 void System_RunMode_OxiMeter()
 {
-
   // Continuously taking samples from MAX30102.  Heart rate and SpO2 are calculated every 1 second
 
   // dumping the first 25 sets of samples in the memory and shift the last 75 sets of samples to the top
