@@ -19,7 +19,7 @@ uint64_t mTaskUpdateScreen = 0;
 const int mA_BatVol_Pin = A0; //模拟量输入引脚
 
 int mBat_Vol_RawValue = 0;  //电池电压读取值
-int mBat_Vol_RealValue = 0; //电池电压读取值映射值
+int gBat_Vol_RealValue = 0; //电池电压读取值映射值
 
 uint8_t gSystemRunMode = 0;
 // 0--正常模式；1--省电模式；2--温度计模式；3--血氧仪模式；4--配网模式；
@@ -186,7 +186,8 @@ void loop()
     {
       Serial.println("system run mode is normal");
       mBitFlagMode = 0x01;
-      MyDisplay_Clear();
+      // MyDisplay_Clear();
+      MyDisplay_EndInit();
       mTaskGetWeather = 0;
       mTaskGetTempHumi = 0;
       mTaskUpdateScreen = 0;
@@ -198,11 +199,12 @@ void loop()
 
   /// @brief 采集电池电压，显示电池电量 ///
   mBat_Vol_RawValue = analogRead(mA_BatVol_Pin);
+  // Serial.print("battery raw value:");
+  // Serial.println(mBat_Vol_RawValue, DEC);
+  gBat_Vol_RealValue = map(mBat_Vol_RawValue, 0, 1024, 0, 500); //可以修改数值映射330   3.3
 
-  mBat_Vol_RealValue = map(mBat_Vol_RawValue, 0, 1024, 0, 330); //可以修改数值映射330   3.3
-
-  Serial.print("battery value:");
-  Serial.println(mBat_Vol_RealValue, DEC);
+  // Serial.print("battery value:");
+  // Serial.println(gBat_Vol_RealValue, DEC);
   MyButton_Tick();
   delay(2);
 }

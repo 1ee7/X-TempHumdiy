@@ -49,7 +49,7 @@ void MyDisplay_EndInit()
     gMyTft.fillScreen(TFT_BLACK); // 清屏
 
     // TJpgDec.drawJpg(0, 0, background, sizeof(background)); //frog 背景图
-    if (g_system_wifi_status == 0)
+    // if (g_system_wifi_status == 0)
     {
         TJpgDec.drawJpg(25, 183, temperature, sizeof(temperature)); // 温度图标
         TJpgDec.drawJpg(25, 213, humidity, sizeof(humidity));       // 湿度图标
@@ -120,13 +120,13 @@ void MyDisplay_ScrollBanner()
         clkb.deleteSprite();
         clkb.unloadFont();
 
-        if (currentIndex >= 5)
+        if (currentIndex >= 6)
             currentIndex = 0; // 回第一个
         else
             currentIndex += 1; // 准备切换到下一个
     }
 }
-
+extern int gBat_Vol_RealValue;
 void MyDisplay_WeaterData()
 {
     // 解析第一段JSON
@@ -244,6 +244,12 @@ void MyDisplay_WeaterData()
     scrollText[4] = "最低温度" + fc["fd"].as<String>() + "℃";
     scrollText[5] = "最高温度" + fc["fc"].as<String>() + "℃";
 
+    float mfbatv = gBat_Vol_RealValue / 100.0;
+    char mstrbtv[4];
+    dtostrf(mfbatv, 1, 2, mstrbtv);
+
+    scrollText[6] = "电池信息" +String(mstrbtv) +"V";
+
     Wclk.unloadFont();
 }
 //////////////////////////////////////////////////////////////////
@@ -288,7 +294,7 @@ void digitalClockDisplay()
         dig.printfW3660(46, timey, hour() % 10);
         Hour_sign = hour();
     }
-    
+
     if (minute() != Minute_sign) // 分钟刷新
     {
         dig.printfO3660(105, timey, minute() / 10);
